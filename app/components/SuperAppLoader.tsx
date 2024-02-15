@@ -1,3 +1,5 @@
+import {Center, Loader, Stack, Title} from "@mantine/core";
+
 function SuperAppLoader() {
   return (
     <div
