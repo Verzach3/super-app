@@ -1,6 +1,7 @@
 import "@mantine/core/styles.css"
+import "@mantine/charts/styles.css"
 import {cssBundleHref} from "@remix-run/css-bundle";
-import type {LinksFunction} from "@remix-run/node";
+import type {LinksFunction, MetaFunction} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -15,6 +16,13 @@ import primecore from 'primereact/resources/primereact.min.css';
 import primeicons from 'primeicons/primeicons.css';
 import primeflex from 'primeflex/primeflex.min.css';
 
+
+export const meta: MetaFunction = () => {
+  return [
+    {title: "Super App"},
+    {name: "description", content: "Welcome to SuperApp!"},
+  ];
+};
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{rel: "stylesheet", href: cssBundleHref}] : []),

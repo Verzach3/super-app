@@ -28,6 +28,8 @@
     "@remix-run/node": "^2.5.1",
     "@remix-run/react": "^2.5.1",
     "@remix-run/serve": "^2.5.1",
+    "@supabase/auth-helpers-remix": "^0.3.0",
+    "@supabase/supabase-js": "^2.39.6",
     "@tabler/icons-react": "^2.46.0",
     "@tiptap/extension-link": "^2.2.0",
     "@tiptap/react": "^2.2.0",

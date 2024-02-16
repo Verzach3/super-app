@@ -1,10 +1,11 @@
-import {Menu, rem, Table, Text, Button} from "@mantine/core";
+import {Menu, rem, Table, Text, Button, Title} from "@mantine/core";
 
 import {useDisclosure} from "@mantine/hooks";
 import {
-  IconArrowsLeftRight, IconDropletDown,
+  IconApps,
+  IconArrowsLeftRight, IconDropletDown, IconEye,
   IconMessageCircle, IconPencil,
-  IconPhoto,
+  IconPhoto, IconReport,
   IconSearch,
   IconSettings,
   IconTrash
@@ -30,7 +31,7 @@ function SurveysListItem() {
         <Table.Td>
           <Menu trigger={"click"}>
             <Menu.Target>
-              <Button rightSection={<IconDropletDown/>}>
+              <Button rightSection={<IconApps/>} variant={"light"}>
                 Actions
               </Button>
             </Menu.Target>
@@ -38,6 +39,12 @@ function SurveysListItem() {
             <Menu.Label>Encuesta</Menu.Label>
               <Menu.Item leftSection={<IconPencil style={{width: rem(14), height: rem(14)}}/>}>
                 Editar
+              </Menu.Item>
+              <Menu.Item leftSection={<IconEye style={{width: rem(14), height: rem(14)}}/>}>
+                Preview
+              </Menu.Item>
+              <Menu.Item leftSection={<IconReport style={{width: rem(14), height: rem(14)}}/>}>
+                Answers
               </Menu.Item>
               <Menu.Divider/>
               <Menu.Item
