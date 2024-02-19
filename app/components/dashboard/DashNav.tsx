@@ -4,7 +4,7 @@ import {
   IconSettings,
   IconLogout, IconPuzzle, IconCheckbox, IconPlugConnected, IconLayoutDashboard, IconReport,
 } from '@tabler/icons-react';
-import classes from './DashNav.module.css';
+import classes from '../../styles/dashboard/DashNav.module.css';
 import {UserButton} from "~/components/dashboard/UserButton";
 import {Link, useLocation } from "@remix-run/react";
 

@@ -1,5 +1,6 @@
 import "@mantine/core/styles.css"
 import "@mantine/charts/styles.css"
+import "@mantine/carousel/styles.css"
 import {cssBundleHref} from "@remix-run/css-bundle";
 import type {LinksFunction, MetaFunction} from "@remix-run/node";
 import {
