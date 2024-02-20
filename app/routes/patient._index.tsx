@@ -36,25 +36,33 @@ function Patient_index() {
           <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, [Patient Name]</Title>
           <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
         </Container>
-        <Carousel mx={"10rem"} slideGap={"xs"} withIndicators slideSize={"10%"} slidesToScroll={1} align={"start"}
-                  withControls={false}>
-          <Carousel.Slide>
-            <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                      description={"Paga tu factura de manera segura y rápida"}/>
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                      description={"Paga tu factura de manera segura y rápida"}/>
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                      description={"Paga tu factura de manera segura y rápida"}/>
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                      description={"Paga tu factura de manera segura y rápida"}/>
-          </Carousel.Slide>
-        </Carousel>
+        <div
+          style={{
+            justifyItems: "center"
+          }}
+        >
+          <Carousel style={{
+            width: "90%",
+          }} mx={"10rem"} slideGap={"xs"} withIndicators slideSize={"10%"} slidesToScroll={1} align={"start"}
+                    withControls={false}>
+            <Carousel.Slide>
+              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
+                        description={"Paga tu factura de manera segura y rápida"}/>
+            </Carousel.Slide>
+            <Carousel.Slide>
+              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
+                        description={"Paga tu factura de manera segura y rápida"}/>
+            </Carousel.Slide>
+            <Carousel.Slide>
+              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
+                        description={"Paga tu factura de manera segura y rápida"}/>
+            </Carousel.Slide>
+            <Carousel.Slide>
+              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
+                        description={"Paga tu factura de manera segura y rápida"}/>
+            </Carousel.Slide>
+          </Carousel>
+        </div>
         <Center>
 
           <Container mx={"2rem"} w={"90rem"} style={{justifySelf: "center"}}>
