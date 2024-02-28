@@ -1,22 +1,28 @@
 import "@mantine/core/styles.css"
 import "@mantine/charts/styles.css"
 import "@mantine/carousel/styles.css"
+import "@mantine/notifications/styles.css"
 import {cssBundleHref} from "@remix-run/css-bundle";
-import type {LinksFunction, MetaFunction} from "@remix-run/node";
+import {LinksFunction, MetaFunction, Session, LoaderFunctionArgs, json} from "@remix-run/node";
 import {
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  ScrollRestoration, useFetcher, useLoaderData,
 } from "@remix-run/react";
 import {MantineProvider} from "@mantine/core";
 import primetheme from 'primereact/resources/themes/lara-light-indigo/theme.css';
 import primecore from 'primereact/resources/primereact.min.css';
 import primeicons from 'primeicons/primeicons.css';
 import primeflex from 'primeflex/primeflex.min.css';
-
+import {createBrowserClient, SupabaseClient} from "@supabase/auth-helpers-remix";
+import {Database} from "~/types/database.types";
+import {useEffect, useState} from "react";
+import {Provider} from "jotai"
+import {createServerClient} from "~/util/supabase.server";
+import {Notifications} from "@mantine/notifications";
 
 export const meta: MetaFunction = () => {
   return [
@@ -45,10 +51,73 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export type TypedSupabaseClient = SupabaseClient<Database>;
+export type MaybeSession = Session | null;
+
+export type SupabaseContext = {
+  supabase: TypedSupabaseClient;
+  session: MaybeSession;
+};
+
+export const loader = async ({request}: LoaderFunctionArgs) => {
+  const env = {
+    SUPABASE_URL: process.env.SUPABASE_URL!,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!
+  };
+
+  const response = new Response();
+
+  const supabase = createServerClient({request, response});
+
+  const {
+    data: {session}
+  } = await supabase.auth.getSession();
+
+  // in order for the set-cookie header to be set,
+  // headers must be returned as part of the loader response
+  return json(
+    {
+      env,
+      session
+    },
+    {
+      headers: response.headers
+    }
+  );
+};
+
 export default function App() {
+  const {env, session} = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
+  const [supabase] = useState(() =>
+    createBrowserClient<Database>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
+  );
+  const serverAccessToken = session?.access_token;
+
+  useEffect(() => {
+    const {
+      data: {subscription}
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.access_token !== serverAccessToken && fetcher.state === 'idle') {
+        // server and client are out of sync.
+        // Remix recalls active loaders after actions complete
+        fetcher.submit(null, {
+          method: 'post',
+          action: '/handle-supabase-auth'
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [serverAccessToken, supabase, fetcher]);
+
+
   return (
     <html lang="en">
     <head>
+      <title>WellFit Platform</title>
       <meta charSet="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1"/>
       <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -58,12 +127,15 @@ export default function App() {
       <Links/>
     </head>
     <body>
-    <MantineProvider>
-        <Outlet/>
+    <Provider>
+      <MantineProvider>
+        <Notifications/>
+        <Outlet context={{supabase, session}}/>
         <ScrollRestoration/>
         <Scripts/>
         <LiveReload/>
-    </MantineProvider>
+      </MantineProvider>
+    </Provider>
     </body>
     </html>
   );

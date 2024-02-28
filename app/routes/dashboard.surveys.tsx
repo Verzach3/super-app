@@ -23,12 +23,24 @@ import {
   IconSettings, IconTrash
 } from "@tabler/icons-react";
 import SurveysAffixBtn from "~/components/dashboard/surveys/SurveysAffixBtn";
+import {useDisclosure} from "@mantine/hooks";
+import {useAtomValue} from "jotai";
+import {supabaseAtom} from "~/state/supabase";
+import {useEffect} from "react";
 
 function DashboardSurveys() {
+  const [opened, {open, close}] = useDisclosure(false);
+  const val = useAtomValue(supabaseAtom);
+  useEffect(() => {
+    if (!val) {
+      return
+    }
+    const {supabase} = val;
+    console.log(supabase)
+  }, []);
   return (
     <>
-    <Modal pb={"xl"} size={"xl"} opened={true} onClose={() => {
-      }} centered title={"Crear una Encuesta"} styles={{
+      <Modal pb={"xl"} size={"xl"} opened={opened} onClose={close} centered title={"Crear una Encuesta"} styles={{
         title: {
           fontFamily: "Inter",
           fontWeight: 600

@@ -1,6 +1,5 @@
-import {Box, Card, Group, Text, Title} from "@mantine/core";
+import {Card, Group, Text, Title} from "@mantine/core";
 import {AreaChart, BarChart} from "@mantine/charts";
-import surveysListItem from "~/components/dashboard/surveys/SurveysListItem";
 import {surveysAreaData} from "~/util/surveysAreaData";
 import {barChartData} from "~/util/surveysBarChartData";
 
