@@ -14,7 +14,6 @@ export default function Index() {
   const navigation = useNavigation();
   const navigate = useNavigate();
   useEffect(() => {
-    console.log(navigation);
     if (navigation.state === "loading" || navigation.state === "idle") {
       navigate("/dashboard");
     }

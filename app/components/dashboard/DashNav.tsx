@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {Group, Code, Text} from '@mantine/core';
 import {
   IconSettings,
-  IconLogout, IconPuzzle, IconCheckbox, IconPlugConnected, IconLayoutDashboard, IconReport,
+  IconLogout, IconPuzzle, IconCheckbox, IconPlugConnected, IconLayoutDashboard, IconReport, IconUsers,
 } from '@tabler/icons-react';
 import classes from '../../styles/dashboard/DashNav.module.css';
 import {UserButton} from "~/components/dashboard/UserButton";
@@ -12,6 +12,7 @@ const data = [
   {link: '/dashboard', label: 'Inicio', icon: IconLayoutDashboard},
   {link: '/dashboard/surveys', label: 'Encuestas', icon: IconCheckbox},
   {link: '/dashboard/surveys/results', label: 'Resultados', icon: IconReport},
+  {link: '/dashboard/patients', label: 'Pacientes', icon: IconUsers},
   {link: '/dashboard/integrations', label: 'Integraciones', icon: IconPlugConnected},
   {link: '/dashboard/modules', label: 'Modulos', icon: IconPuzzle},
   {link: '/dashboard/settings', label: 'Ajustes', icon: IconSettings},
@@ -22,7 +23,6 @@ export function DashNav() {
   const [active, setActive] = useState("Encuestas");
   useEffect(() => {
     const current = navigation.pathname.split("/").pop();
-    console.log(current)
     data.forEach((item) => {
       if (item.link.split("/").pop() === current) {
         setActive(item.label);

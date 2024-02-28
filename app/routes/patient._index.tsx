@@ -1,10 +1,28 @@
-import {Container, Title, Text, Button, Image, Card, Center, Group, Grid, SimpleGrid} from "@mantine/core";
+import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid} from "@mantine/core";
 import {IconCaretRight} from "@tabler/icons-react";
 import {motion} from "framer-motion";
 import ShortCut from "~/components/patient/ShortCut";
 import {Carousel} from "@mantine/carousel";
 import {FaUserDoctor} from "react-icons/fa6";
+import {LoaderFunctionArgs} from "@remix-run/node";
+import {createServerClient} from "@supabase/auth-helpers-remix";
+import {Database} from "~/types/database.types";
+import * as process from "process";
 
+export async function loader({request}: LoaderFunctionArgs) {
+  const response = new Response();
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+
+  if (code) {
+    const supabase = createServerClient<Database>(
+      process.env.SUPABASE_URL ?? "",
+      process.env.SUPABASE_ANON_KEY ?? "",
+      {request, response}
+    )
+  }
+  return null
+}
 function Patient_index() {
   return (
     <div style={{overflowX: "hidden", paddingBottom: "10rem"}}>
