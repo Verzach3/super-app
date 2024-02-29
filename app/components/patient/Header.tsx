@@ -6,7 +6,6 @@ import {
   Text,
   SimpleGrid,
   ThemeIcon,
-  Anchor,
   Divider,
   Center,
   Box,
@@ -15,7 +14,7 @@ import {
   Collapse,
   ScrollArea,
   rem,
-  useMantineTheme, TextInput,
+  useMantineTheme, TextInput, Popover, Card, Stack,
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {
@@ -97,14 +96,35 @@ export function Header() {
           </Group>
 
           <Group visibleFrom="sm">
-            <Button
-              variant="default"
-              radius={100}
-              leftSection={<IconMessages/>}
-              rightSection={<IconChevronDown/>}
-            >
-              Messages
-            </Button>
+            <Popover width={300}>
+              <Popover.Target>
+                <Button
+                  variant="default"
+                  radius={100}
+                  leftSection={<IconMessages/>}
+                  rightSection={<IconChevronDown/>}
+                >
+                  Messages
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <Card m={0} p={0}>
+                  <Center>
+                    <ThemeIcon radius={100} size={"lg"}>
+                      <IconMessage2/>
+                    </ThemeIcon>
+                    <Stack gap={0}>
+                      <Text size="md" fw={700} style={{fontFamily: "Inter"}}>
+                        Doctor
+                      </Text>
+                      <Text size="sm" c="dimmed">
+                        Hola, como estas?
+                      </Text>
+                    </Stack>
+                  </Center>
+                </Card>
+              </Popover.Dropdown>
+            </Popover>
             <Button
               variant="default"
               radius={100}

@@ -23,16 +23,18 @@ export async function loader({request}: LoaderFunctionArgs) {
   }
   return null
 }
+
 function Patient_index() {
   return (
     <div style={{overflowX: "hidden", paddingBottom: "10rem"}}>
       <Image src={"/consultory.avif"} style={{objectFit: "cover", width: "100%", height: "25rem"}}/>
-      <div style={{flex: 1, display: "flex", flexDirection: "column"}}>
+      <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-end", height: "100%"}}>
         <motion.div
           style={{
             flex: 1,
             display: "flex",
             justifyContent: "flex-end",
+            width: "fit-content",
           }}
           whileHover={{
             scale: 1.03,
@@ -52,16 +54,11 @@ function Patient_index() {
         </motion.div>
         <Container w={"100%"}>
           <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, [Patient Name]</Title>
-          <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
+          <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesoss Directos</Text>
         </Container>
-        <div
-          style={{
-            justifyItems: "center"
-          }}
-        >
-          <Carousel style={{
-            width: "90%",
-          }} mx={"10rem"} slideGap={"xs"} withIndicators slideSize={"10%"} slidesToScroll={1} align={"start"}
+        <Center inline>
+
+          <Carousel slideGap={"xs"} withIndicators slideSize={"10%"} align={"start"}
                     withControls={false}>
             <Carousel.Slide>
               <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
@@ -80,7 +77,7 @@ function Patient_index() {
                         description={"Paga tu factura de manera segura y rápida"}/>
             </Carousel.Slide>
           </Carousel>
-        </div>
+        </Center>
         <Center>
 
           <Container mx={"2rem"} w={"90rem"} style={{justifySelf: "center"}}>
