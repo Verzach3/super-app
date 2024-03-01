@@ -27,6 +27,7 @@ import {
   IconChevronDown, IconSearch, IconMessage, IconMessage2, IconMessages, IconUserCircle,
 } from '@tabler/icons-react';
 import classes from '../../styles/patient/Header.module.css';
+import HeaderMessage from "~/components/patient/HeaderMessage";
 
 const mockdata = [
   {
@@ -94,7 +95,6 @@ export function Header() {
           <Group h="100%" gap={0} visibleFrom="sm" style={{width: "30rem"}}>
             <TextInput variant={"filled"} rightSection={<IconSearch/>} style={{flex: 1}} radius={100}/>
           </Group>
-
           <Group visibleFrom="sm">
             <Popover width={300}>
               <Popover.Target>
@@ -108,21 +108,14 @@ export function Header() {
                 </Button>
               </Popover.Target>
               <Popover.Dropdown>
-                <Card m={0} p={0}>
-                  <Center>
-                    <ThemeIcon radius={100} size={"lg"}>
-                      <IconMessage2/>
-                    </ThemeIcon>
-                    <Stack gap={0}>
-                      <Text size="md" fw={700} style={{fontFamily: "Inter"}}>
-                        Doctor
-                      </Text>
-                      <Text size="sm" c="dimmed">
-                        Hola, como estas?
-                      </Text>
-                    </Stack>
-                  </Center>
-                </Card>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <div style={{width: "100%", justifyContent: "right", flex: 1}}>
+                  <Text style={{width: "fit-content"}}>Ver Todos</Text>
+                </div>
               </Popover.Dropdown>
             </Popover>
             <Button
