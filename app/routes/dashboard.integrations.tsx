@@ -59,7 +59,7 @@ function DashboardIntegrations() {
         <Title style={{fontFamily: "Inter", marginBottom: "3rem"}}>
           Integraciones
         </Title>
-        <Card withBorder>
+        <Card withBorder my={"1rem"}>
           <Group justify={"space-between"}>
             <Text fw={600} style={{fontFamily: "Inter"}}>
               Resources
@@ -75,7 +75,7 @@ function DashboardIntegrations() {
             </Group>
           </Group>
         </Card>
-        <Card withBorder>
+        <Card withBorder my={"1rem"}>
           <Group justify={"space-between"}>
             <Text fw={600} style={{fontFamily: "Inter"}}>
               Blogs
