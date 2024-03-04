@@ -1,10 +1,8 @@
 import {
-  HoverCard,
   Group,
   Button,
   UnstyledButton,
   Text,
-  SimpleGrid,
   ThemeIcon,
   Divider,
   Center,
@@ -108,7 +106,6 @@ export function Header() {
                 </Button>
               </Popover.Target>
               <Popover.Dropdown>
-                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
                 <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
                 <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
                 <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>

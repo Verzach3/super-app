@@ -13,10 +13,6 @@ import {
   ScrollRestoration, useFetcher, useLoaderData,
 } from "@remix-run/react";
 import {MantineProvider} from "@mantine/core";
-import primetheme from 'primereact/resources/themes/lara-light-indigo/theme.css';
-import primecore from 'primereact/resources/primereact.min.css';
-import primeicons from 'primeicons/primeicons.css';
-import primeflex from 'primeflex/primeflex.min.css';
 import {createBrowserClient, SupabaseClient} from "@supabase/auth-helpers-remix";
 import {Database} from "~/types/database.types";
 import {useEffect, useState} from "react";
@@ -33,22 +29,6 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{rel: "stylesheet", href: cssBundleHref}] : []),
-  {
-    rel: 'stylesheet',
-    href: primeflex,
-  },
-  {
-    rel: 'stylesheet',
-    href: primetheme,
-  },
-  {
-    rel: 'stylesheet',
-    href: primecore,
-  },
-  {
-    rel: 'stylesheet',
-    href: primeicons,
-  },
 ];
 
 export type TypedSupabaseClient = SupabaseClient<Database>;

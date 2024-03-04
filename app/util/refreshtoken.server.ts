@@ -1,4 +1,5 @@
 import superagent from "superagent";
+import {getToken, setToken} from "~/util/tokenUtil.server";
 
 export async function refreshToken() {
     const res = await superagent.post(process.env.EMR_AUTH_URL ?? "").set("Content-Type", "application/x-www-form-urlencoded").send({
@@ -9,5 +10,5 @@ export async function refreshToken() {
         username: process.env.EMR_USERNAME ?? "",
         password: process.env.EMR_PASSWORD ?? ""
     })
-    return res.body
+    return await setToken(res.body.access_token)
 }

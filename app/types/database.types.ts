@@ -141,6 +141,32 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_profiles: {
+        Row: {
+          created_at: string
+          emr_id: string | null
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          emr_id?: string | null
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          emr_id?: string | null
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_patient_profiles_emr_id_fkey"
+            columns: ["emr_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       roles: {
         Row: {
           created_at: string
