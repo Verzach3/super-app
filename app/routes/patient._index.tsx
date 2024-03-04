@@ -4,27 +4,54 @@ import {motion} from "framer-motion";
 import ShortCut from "~/components/patient/ShortCut";
 import {Carousel} from "@mantine/carousel";
 import {FaUserDoctor} from "react-icons/fa6";
-import {LoaderFunctionArgs} from "@remix-run/node";
+import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {createServerClient} from "@supabase/auth-helpers-remix";
 import {Database} from "~/types/database.types";
 import * as process from "process";
+import {checkForRoles} from "~/util/checkForRole";
+import {getPatientData} from "~/util/emrAPI.server";
+import {useLoaderData} from "@remix-run/react";
+import {useEffect, useState} from "react";
+import {Patient} from "fhir/r4";
 
 export async function loader({request}: LoaderFunctionArgs) {
   const response = new Response();
-  const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-
-  if (code) {
-    const supabase = createServerClient<Database>(
-      process.env.SUPABASE_URL ?? "",
-      process.env.SUPABASE_ANON_KEY ?? "",
-      {request, response}
-    )
+  const supabase = createServerClient<Database>(
+    process.env.SUPABASE_URL ?? "",
+    process.env.SUPABASE_ANON_KEY ?? "",
+    {request, response}
+  )
+  const authorized = await checkForRoles(["patient", "admin"], supabase);
+  if (!authorized) {
+    return json({error: "Unauthorized"}, {
+      status: 401
+    })
   }
-  return null
+  const session = await supabase.auth.getSession();
+  const profile = await supabase.from("patient_profiles").select("*").eq("user_id", session?.data.session?.user.id ?? "").single()
+  if (!profile.data) {
+    return json({error: "User does'nt exist"}, {
+      status: 500
+    })
+  }
+  const data = await getPatientData(profile.data.emr_id)
+  return json({patient: data}, {
+    headers: response.headers
+  })
 }
 
 function Patient_index() {
+  const loaderData = useLoaderData<typeof loader>()
+  const [patient, setPatient] = useState<Patient | null>(null)
+  useEffect(() => {
+    if (Object.hasOwn(loaderData, "error")) {
+      return
+    }
+    if (Object.hasOwn(loaderData, "patient")) {
+      // @ts-ignore
+      setPatient(loaderData?.patient)
+    }
+  }, []);
   return (
     <div style={{overflowX: "hidden", paddingBottom: "10rem"}}>
       <Image src={"/consultory.avif"} style={{objectFit: "cover", width: "100%", height: "25rem"}}/>
@@ -53,8 +80,8 @@ function Patient_index() {
           </Card>
         </motion.div>
         <Container w={"100%"}>
-          <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, [Patient Name]</Title>
-          <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesoss Directos</Text>
+          <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, {patient?.name?.[0].given ?? ""}</Title>
+          <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
         </Container>
         <Center inline>
 

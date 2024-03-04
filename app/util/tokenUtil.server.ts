@@ -1,11 +1,17 @@
 import Redis from "ioredis";
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST,
-  port: parseInt(process.env.REDIS_PORT ?? ""),
-  password: process.env.REDIS_PASSWORD,
-  username: process.env.REDIS_USERNAME
-})
+let redis: Redis
+
+if (process.env.NODE_ENV === "production") {
+  redis = new Redis({
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT ?? ""),
+    password: process.env.REDIS_PASSWORD,
+    username: process.env.REDIS_USERNAME
+  })
+} else {
+  redis = new Redis()
+}
 
 export async function getToken() {
   console.log("Getting token")

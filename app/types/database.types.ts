@@ -144,24 +144,27 @@ export type Database = {
       patient_profiles: {
         Row: {
           created_at: string
-          emr_id: string | null
+          emr_id: string
           id: number
+          user_id: string
         }
         Insert: {
           created_at?: string
-          emr_id?: string | null
+          emr_id?: string
           id?: number
+          user_id: string
         }
         Update: {
           created_at?: string
-          emr_id?: string | null
+          emr_id?: string
           id?: number
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "public_patient_profiles_emr_id_fkey"
-            columns: ["emr_id"]
-            isOneToOne: false
+            foreignKeyName: "public_patient_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           }

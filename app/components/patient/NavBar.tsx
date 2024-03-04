@@ -26,6 +26,7 @@ type LinksType = {
 
 const navLinks: LinksType = {
     "Inicio": [
+        {name: "Inicio", path:"/patient/"},
         {name: "Analisis", path: "/patient/lab-results"},
         {name: "Medicamentos", path: "/patient/medications"},
         {name: "Renovar mi receta medica"},

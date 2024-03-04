@@ -9,27 +9,35 @@ import {getToken} from "~/util/tokenUtil.server";
 import {useEffect} from "react";
 import {IconUser} from "@tabler/icons-react";
 import {createServerClient} from "@supabase/auth-helpers-remix";
-import {checkForRole} from "~/util/checkForRole";
+import {checkForRoles} from "~/util/checkForRole";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({request}: LoaderFunctionArgs) => {
   const response = new Response();
-  const supabaseClient = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {request, response});
-  const hasRole = await checkForRole("admin", supabaseClient);
+  const supabaseClient = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+    request,
+    response
+  });
+  const hasRole = await checkForRoles(["admin"], supabaseClient);
   if (!hasRole) {
+    console.log("Unauthorized")
     return json(null, {
-      status: 401
+      status: 401,
+      headers: response.headers
     })
   }
   try {
-    const response = await getAxiosClientServer().get("https://emr.wellfitclinic.com/apis/default/fhir/Patient", {
+    const axiosres = await getAxiosClientServer().get("https://emr.wellfitclinic.com/apis/default/fhir/Patient", {
       headers: {
         Authorization: `Bearer ${await getToken() ?? ""}`
       }
     },)
-    return json(response.data)
+    return json(axiosres.data, {headers: response.headers});
   } catch (e) {
-    console.log("Error fetching patients");
-    return null
+    console.log("Error fetching patients", e);
+    return json(null, {
+      status: 500,
+      headers: response.headers
+    })
   }
 
 }
