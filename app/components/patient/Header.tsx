@@ -1,12 +1,9 @@
 import {
-  HoverCard,
   Group,
   Button,
   UnstyledButton,
   Text,
-  SimpleGrid,
   ThemeIcon,
-  Anchor,
   Divider,
   Center,
   Box,
@@ -15,7 +12,7 @@ import {
   Collapse,
   ScrollArea,
   rem,
-  useMantineTheme, TextInput,
+  useMantineTheme, TextInput, Popover, Card, Stack,
 } from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {
@@ -28,6 +25,7 @@ import {
   IconChevronDown, IconSearch, IconMessage, IconMessage2, IconMessages, IconUserCircle,
 } from '@tabler/icons-react';
 import classes from '../../styles/patient/Header.module.css';
+import HeaderMessage from "~/components/patient/HeaderMessage";
 
 const mockdata = [
   {
@@ -95,16 +93,28 @@ export function Header() {
           <Group h="100%" gap={0} visibleFrom="sm" style={{width: "30rem"}}>
             <TextInput variant={"filled"} rightSection={<IconSearch/>} style={{flex: 1}} radius={100}/>
           </Group>
-
           <Group visibleFrom="sm">
-            <Button
-              variant="default"
-              radius={100}
-              leftSection={<IconMessages/>}
-              rightSection={<IconChevronDown/>}
-            >
-              Messages
-            </Button>
+            <Popover width={300}>
+              <Popover.Target>
+                <Button
+                  variant="default"
+                  radius={100}
+                  leftSection={<IconMessages/>}
+                  rightSection={<IconChevronDown/>}
+                >
+                  Messages
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <HeaderMessage title={"Doctor"} content={"Hola, como estas?"}/>
+                <div style={{width: "100%", justifyContent: "right", flex: 1}}>
+                  <Text style={{width: "fit-content"}}>Ver Todos</Text>
+                </div>
+              </Popover.Dropdown>
+            </Popover>
             <Button
               variant="default"
               radius={100}

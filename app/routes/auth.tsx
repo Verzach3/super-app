@@ -1,12 +1,13 @@
-import {Title, Text, Anchor, Paper, Group, TextInput, Center, rem, Box, Button, Container} from "@mantine/core";
+import {Title, Text, Anchor, Paper, Group, TextInput, Center, rem, Box, Button, Container, Loader} from "@mantine/core";
 import {IconArrowLeft} from "@tabler/icons-react";
 import classes from "~/styles/routes/auth.module.css";
-import {useOutletContext} from "@remix-run/react";
+import {useNavigate, useOutletContext} from "@remix-run/react";
 import {Session, SupabaseClient} from "@supabase/auth-helpers-remix";
 import {Database} from "~/types/database.types";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 function Auth() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [disabled, setDisabled] = useState<boolean>(false);
   const {supabase, session} = useOutletContext<{ supabase: SupabaseClient<Database>, session: Session | null }>();
@@ -18,6 +19,14 @@ function Auth() {
       options: {emailRedirectTo: "http://localhost:3000/auth/callback"}
     });
   }
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
+        navigate("/dashboard");
+      }
+    })
+  }, []);
 
   return (
     <div style={{
@@ -45,7 +54,9 @@ function Auth() {
                   <Box ml={5}>Volver a la pagina principal</Box>
                 </Center>
               </Anchor>
-              <Button disabled={disabled} className={classes.control} onClick={sendLink}>Enviar Enlace</Button>
+              <Button disabled={disabled} className={classes.control} onClick={sendLink}>
+                {disabled ? <Loader/> : "Enviar Enlace"}
+              </Button>
             </Group>
           </Paper>
         </Container>
