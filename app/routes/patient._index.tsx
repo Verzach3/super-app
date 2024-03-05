@@ -1,4 +1,4 @@
-import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid} from "@mantine/core";
+import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack} from "@mantine/core";
 import {IconCaretRight} from "@tabler/icons-react";
 import {motion} from "framer-motion";
 import ShortCut from "~/components/patient/ShortCut";
@@ -53,7 +53,7 @@ function Patient_index() {
     }
   }, []);
   return (
-    <div style={{overflowX: "hidden", paddingBottom: "10rem"}}>
+    <div style={{paddingBottom: "10rem"}}>
       <Image src={"/consultory.avif"} style={{objectFit: "cover", width: "100%", height: "25rem"}}/>
       <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-end", height: "100%"}}>
         <motion.div
@@ -83,8 +83,7 @@ function Patient_index() {
           <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, {patient?.name?.[0].given ?? ""}</Title>
           <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
         </Container>
-        <Center inline>
-
+        <Container style={{width: "100vw", overflowX: "hidden"}} p={0}>
           <Carousel slideGap={"xs"} withIndicators slideSize={"10%"} align={"start"}
                     withControls={false}>
             <Carousel.Slide>
@@ -104,11 +103,12 @@ function Patient_index() {
                         description={"Paga tu factura de manera segura y rápida"}/>
             </Carousel.Slide>
           </Carousel>
-        </Center>
-        <Center>
-
-          <Container mx={"2rem"} w={"90rem"} style={{justifySelf: "center"}}>
-            <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Recibe Atencion</Text>
+        </Container>
+        <Container>
+          <Stack>
+            <Center>
+              <Title ta={"center"} order={3} fw={600} mt={"4rem"} mb={"md"}>Recibe Atencion</Title>
+            </Center>
             <SimpleGrid cols={2}>
               <Card withBorder py={"lg"}>
                 <Center>
@@ -135,8 +135,8 @@ function Patient_index() {
                 </Center>
               </Card>
             </SimpleGrid>
-          </Container>
-        </Center>
+          </Stack>
+        </Container>
       </div>
     </div>
   )

@@ -6,6 +6,8 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export type PatientProfile = Database["public"]["Tables"]["patient_profiles"]["Row"]
+
 export type Database = {
   public: {
     Tables: {
