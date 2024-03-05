@@ -1,7 +1,7 @@
 import {SupabaseClient} from "@supabase/auth-helpers-remix";
 import {Database} from "~/types/database.types";
 
-export async function checkForRole(role: string, supabase: SupabaseClient<Database>) {
+export async function checkForRoles(role: string[], supabase: SupabaseClient<Database>) {
   const session = await supabase.auth.getSession();
   if (!session) {
     return false;
@@ -14,5 +14,5 @@ export async function checkForRole(role: string, supabase: SupabaseClient<Databa
     return false;
   }
 
-  return res.data.roles.name === role;
+  return role.some((r) => res.data.roles?.name === r);
 }

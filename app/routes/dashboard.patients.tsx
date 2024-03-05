@@ -1,47 +1,68 @@
-import superagent from "superagent"
 import * as process from "process";
 import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {useLoaderData, useRevalidator} from "@remix-run/react";
 import {Patient} from "fhir/r4";
-import {Button, Card, Center, Container, Group, SimpleGrid, Stack, Text, ThemeIcon, Title} from "@mantine/core";
+import {Container, SimpleGrid, Title} from "@mantine/core";
 import getAxiosClientServer from "~/util/getAxiosClient.server";
 import {getToken} from "~/util/tokenUtil.server";
-import {useEffect} from "react";
-import {IconUser} from "@tabler/icons-react";
+import {useEffect, useState} from "react";
 import {createServerClient} from "@supabase/auth-helpers-remix";
-import {checkForRole} from "~/util/checkForRole";
+import {checkForRoles} from "~/util/checkForRole";
+import PatientCard from "~/components/dashboard/patients/PatientCard";
+import {PatientProfile} from "~/types/database.types";
+import CompoundPatient from "~/fhir-supa/compoundPatient";
+import generateCompoundPatients from "~/util/generateCompoundPatients";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({request}: LoaderFunctionArgs) => {
   const response = new Response();
-  const supabaseClient = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {request, response});
-  const hasRole = await checkForRole("admin", supabaseClient);
+  const supabaseClient = createServerClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
+    request,
+    response
+  });
+  const hasRole = await checkForRoles(["admin"], supabaseClient);
   if (!hasRole) {
-    return json(null, {
-      status: 401
+    console.log("Unauthorized")
+    return json({error: "Unauthorized"}, {
+      status: 401,
+      headers: response.headers
     })
   }
   try {
-    const response = await getAxiosClientServer().get("https://emr.wellfitclinic.com/apis/default/fhir/Patient", {
+    const axiosres = await getAxiosClientServer().get("https://emr.wellfitclinic.com/apis/default/fhir/Patient", {
       headers: {
         Authorization: `Bearer ${await getToken() ?? ""}`
       }
     },)
-    return json(response.data)
+    console.log(axiosres.data)
+    const profiles = await supabaseClient.from("patient_profiles").select("*");
+    return json({resources: axiosres.data, profiles: profiles.data}, {headers: response.headers});
   } catch (e) {
-    console.log("Error fetching patients");
-    return null
+    console.log("Error fetching patients", e);
+    return json({error: "Error fetching patients"}, {
+      status: 500,
+      headers: response.headers
+    })
   }
 
 }
 
+
 function DashboardPatients() {
-  const data = useLoaderData<typeof loader>()
+  let data = useLoaderData<typeof loader>()
+  const [patients, setPatients] = useState<CompoundPatient[]>([]);
   const revalidator = useRevalidator();
   useEffect(() => {
     console.log(data)
-    if (data === null) {
+    if (Object.hasOwn(data, "error")) {
       revalidator.revalidate();
+      return
     }
+    if (Object.hasOwn(data, "resources")) {
+      data = data as { resources: { entry: { resource: Patient, fullUrl: string}[] }, profiles: PatientProfile[] }
+      const patients = generateCompoundPatients(data.resources.entry, data.profiles ?? []);
+      setPatients(patients);
+    }
+
   }, [data]);
   return (
     <Container>
@@ -50,50 +71,9 @@ function DashboardPatients() {
       </Title>
       <SimpleGrid cols={2}>
         {
-          data && data?.entry?.map(({resource}: { resource: Patient }) => {
+          patients && patients.map((patient) => {
             return (
-              <Card withBorder m={"md"} key={resource.id}>
-                <Group>
-                  <Text fw={700}>
-                    Id:
-                  </Text>
-                  <Text>
-                    {resource.id}
-                  </Text>
-                </Group>
-                <Group gap={0}>
-                  <ThemeIcon size={"xl"} mr={"1rem"}>
-                    <IconUser/>
-                  </ThemeIcon>
-                  <Group>
-                    <Stack gap={0}>
-                      <Group>
-                        <Text fw={700}>
-                          Nombre:
-                        </Text>
-                        <Text>
-                          {resource.name?.[0].given?.[0]} {resource.name?.[0].family}
-                        </Text>
-                      </Group>
-                      <Group>
-                        <Text fw={700}>
-                          Nacimiento:
-                        </Text>
-                        <Text>
-                          {resource.birthDate}
-                        </Text>
-                      </Group>
-                    </Stack>
-                  </Group>
-                </Group>
-                <Card.Section>
-                  <Container>
-                    <Button>
-                      Ver
-                    </Button>
-                  </Container>
-                </Card.Section>
-              </Card>
+              <PatientCard key={patient.emrId} patient={patient}/>
             )
           })
         }

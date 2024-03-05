@@ -6,7 +6,10 @@ import {
 } from '@tabler/icons-react';
 import classes from '../../styles/dashboard/DashNav.module.css';
 import {UserButton} from "~/components/dashboard/UserButton";
-import {Link, useLocation } from "@remix-run/react";
+import {Link, useLoaderData, useLocation, useOutletContext} from "@remix-run/react";
+import {json, LoaderFunctionArgs} from "@remix-run/node";
+import {createServerClient} from "~/util/supabase.server";
+import {SupabaseClient} from "@supabase/auth-helpers-remix";
 
 const data = [
   {link: '/dashboard', label: 'Inicio', icon: IconLayoutDashboard},
@@ -18,9 +21,16 @@ const data = [
   {link: '/dashboard/settings', label: 'Ajustes', icon: IconSettings},
 ];
 
+
 export function DashNav() {
   const navigation = useLocation();
   const [active, setActive] = useState("Encuestas");
+  const {supabase} = useOutletContext<{ supabase: SupabaseClient }>();
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+  }
+
   useEffect(() => {
     const current = navigation.pathname.split("/").pop();
     data.forEach((item) => {
@@ -65,7 +75,11 @@ export function DashNav() {
 
       <div className={classes.footer}>
         <UserButton/>
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a className={classes.link} onClick={(event) => {
+          event.preventDefault()
+          handleLogout().then(r => console.log(r))
+        }
+        }>
           <IconLogout className={classes.linkIcon} stroke={1.5}/>
           <span>Logout</span>
         </a>
