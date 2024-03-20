@@ -5,22 +5,16 @@ import ShortCut from "~/components/patient/ShortCut";
 import {Carousel} from "@mantine/carousel";
 import {FaUserDoctor} from "react-icons/fa6";
 import {json, LoaderFunctionArgs} from "@remix-run/node";
-import {createServerClient} from "@supabase/auth-helpers-remix";
-import {Database} from "~/types/database.types";
-import * as process from "process";
 import {checkForRoles} from "~/util/checkForRole";
 import {getPatientData} from "~/util/emrAPI.server";
 import {useLoaderData} from "@remix-run/react";
 import {useEffect, useState} from "react";
 import {Patient} from "fhir/r4";
+import {createServerClient} from "~/util/supabase.server";
 
 export async function loader({request}: LoaderFunctionArgs) {
   const response = new Response();
-  const supabase = createServerClient<Database>(
-    process.env.SUPABASE_URL ?? "",
-    process.env.SUPABASE_ANON_KEY ?? "",
-    {request, response}
-  )
+  const supabase = createServerClient({request, response});
   const authorized = await checkForRoles(["patient", "admin"], supabase);
   if (!authorized) {
     return json({error: "Unauthorized"}, {

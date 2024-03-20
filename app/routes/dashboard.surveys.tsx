@@ -26,9 +26,37 @@ import SurveysAffixBtn from "~/components/dashboard/surveys/SurveysAffixBtn";
 import {useDisclosure} from "@mantine/hooks";
 import {useAtomValue} from "jotai";
 import {useEffect} from "react";
+import {json, LoaderFunctionArgs} from "@remix-run/node";
+import {useLoaderData} from "@remix-run/react";
+import {createServerClient} from "@supabase/auth-helpers-remix";
+import {Database} from "~/types/database.types";
+import process from "process";
+import {checkForRoles} from "~/util/checkForRole";
+
+export const loader = async ({request}: LoaderFunctionArgs) => {
+  const response = new Response();
+  const supabase = createServerClient<Database>(
+    process.env.SUPABASE_URL ?? "",
+    process.env.SUPABASE_ANON_KEY ?? "",
+    {request, response}
+  )
+  const authorized = await checkForRoles(["patient", "admin"], supabase);
+  if (!authorized) {
+    return json({error: "Unauthorized", data: {}}, {
+      status: 401
+    })
+  }
+  return json({data: (await supabase.from("surveys").select("*")).data, error: ""}, {
+    headers: response.headers
+  })
+}
 
 function DashboardSurveys() {
   const [opened, {open, close}] = useDisclosure(false);
+  const {data} = useLoaderData<typeof loader>()
+  useEffect(() => {
+    console.log(data)
+  }, []);
   return (
     <>
       <Modal pb={"xl"} size={"xl"} opened={opened} onClose={close} centered title={"Crear una Encuesta"} styles={{
