@@ -7,7 +7,7 @@ import {FaUserDoctor} from "react-icons/fa6";
 import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {checkForRoles} from "~/util/checkForRole";
 import {getPatientData} from "~/util/emrAPI.server";
-import {useLoaderData} from "@remix-run/react";
+import {useLoaderData, useNavigate, useNavigation} from "@remix-run/react";
 import {useEffect, useState} from "react";
 import {Patient} from "fhir/r4";
 import {createServerClient} from "~/util/supabase.server";
@@ -17,14 +17,14 @@ export async function loader({request}: LoaderFunctionArgs) {
   const supabase = createServerClient({request, response});
   const authorized = await checkForRoles(["patient", "admin"], supabase);
   if (!authorized) {
-    return json({error: "Unauthorized"}, {
+    return json({error: "Unauthorized", status: 401}, {
       status: 401
     })
   }
   const session = await supabase.auth.getSession();
   const profile = await supabase.from("patient_profiles").select("*").eq("user_id", session?.data.session?.user.id ?? "").single()
   if (!profile.data) {
-    return json({error: "User does'nt exist"}, {
+    return json({error: "User does'nt exist", status: 500}, {
       status: 500
     })
   }
@@ -37,15 +37,24 @@ export async function loader({request}: LoaderFunctionArgs) {
 function Patient_index() {
   const loaderData = useLoaderData<typeof loader>()
   const [patient, setPatient] = useState<Patient | null>(null)
+  const navigate = useNavigate();
   useEffect(() => {
-    if (Object.hasOwn(loaderData, "error")) {
-      return
+    if ("error" in loaderData) {
+      console.log(loaderData.error)
+      if (loaderData.error === "Unauthorized") {
+        navigate("/auth")
+      }
     }
     if (Object.hasOwn(loaderData, "patient")) {
       // @ts-ignore
       setPatient(loaderData?.patient)
     }
   }, []);
+
+  if ("error" in loaderData) {
+    return null
+  }
+
   return (
     <div style={{paddingBottom: "10rem"}}>
       <Image src={"/consultory.avif"} style={{objectFit: "cover", width: "100%", height: "25rem"}}/>

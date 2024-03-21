@@ -3,6 +3,7 @@ import {getToken, setToken} from "~/util/tokenUtil.server";
 import process from "process";
 
 export async function refreshToken() {
+  console.log("Refreshing token")
   let res
   try {
     res = await superagent.post(process.env.EMR_AUTH_URL ?? "").set("Content-Type", "application/x-www-form-urlencoded").send({
