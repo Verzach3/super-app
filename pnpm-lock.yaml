@@ -149,6 +149,15 @@ dependencies:
   superagent:
     specifier: ^8.1.2
     version: 8.1.2
+  survey-core:
+    specifier: ^1.9.135
+    version: 1.9.135
+  survey-creator-react:
+    specifier: ^1.9.135
+    version: 1.9.135(react-dom@18.2.0)(react@18.2.0)
+  survey-react-ui:
+    specifier: ^1.9.135
+    version: 1.9.135(react-dom@18.2.0)(react@18.2.0)(survey-core@1.9.135)
 
 devDependencies:
   '@remix-run/dev':
@@ -12574,6 +12583,52 @@ packages:
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  /survey-core@1.9.135:
+    resolution: {integrity: sha512-hca9h5He8IqMSgTFQG5o63/h09+hERVUBoOmVZRcyzJKY80Q0vFdtfEQRKh0J6H+PhmC1mvMJpb0gT+TBhnGrA==}
+    dev: false
+
+  /survey-creator-core@1.9.135:
+    resolution: {integrity: sha512-YUu91/HQ5MpY6UtOwaY88fwNXMLPGek1rKo7PKHRyoi9+jNlsaWaSG2qZI98BWCDmr6JtXV31lYnT/AbWY4aJg==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      ace-builds: ^1.4.12
+    peerDependenciesMeta:
+      ace-builds:
+        optional: true
+    dependencies:
+      survey-core: 1.9.135
+    dev: false
+
+  /survey-creator-react@1.9.135(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-9Lj4b6cmEbjY+FSWv6V39GDzGeNFAwv7TMOOcgOx/1iPyMeQDUhLVb+3OkTrHPcDHhn7U+dN0p5/fxFhcJbyJg==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      ace-builds: ^1.4.12
+      react: ^16.5.0 || ^17.0.1 || ^18.1.0
+      react-dom: ^16.5.0 || ^17.0.1 || ^18.1.0
+    peerDependenciesMeta:
+      ace-builds:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      survey-core: 1.9.135
+      survey-creator-core: 1.9.135
+      survey-react-ui: 1.9.135(react-dom@18.2.0)(react@18.2.0)(survey-core@1.9.135)
+    dev: false
+
+  /survey-react-ui@1.9.135(react-dom@18.2.0)(react@18.2.0)(survey-core@1.9.135):
+    resolution: {integrity: sha512-bag3qB017acGW1vaIRg555QSAtNd9c55iAFyvW4gz+8gmjktNDSuy4AAm0W2sqzDSUbTCNc4nZ6Zsp0whrzPAQ==}
+    peerDependencies:
+      react: ^16.5.0 || ^17.0.1 || ^18.2.0
+      react-dom: ^16.5.0 || ^17.0.1 || ^18.2.0
+      survey-core: '*'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      survey-core: 1.9.135
+    dev: false
 
   /tabbable@6.2.0:
     resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}

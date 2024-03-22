@@ -58,7 +58,10 @@
     "react-magic-motion": "^1.1.2",
     "recharts": "^2.12.1",
     "redis": "^4.6.13",
-    "superagent": "^8.1.2"
+    "superagent": "^8.1.2",
+    "survey-core": "^1.9.135",
+    "survey-creator-react": "^1.9.135",
+    "survey-react-ui": "^1.9.135"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.8.0",

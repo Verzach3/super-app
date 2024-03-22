@@ -4,11 +4,12 @@ import {Outlet, useOutletContext} from "@remix-run/react";
 import {Session, SupabaseClient} from "@supabase/auth-helpers-remix";
 import {Database} from "~/types/database.types";
 import {useEffect} from "react";
+import OutletContext from "~/types/OutletContext";
 
 export default function Dashboard() {
-  const {supabase, session} = useOutletContext<{ supabase: SupabaseClient<Database>, session: Session | null }>();
+  const {supabase, session} = useOutletContext<OutletContext>();
   useEffect(() => {
-    checkSession()
+    void checkSession()
   }, []);
 
   async function checkSession() {
@@ -21,7 +22,6 @@ export default function Dashboard() {
       navbar={{
         width: 300,
         breakpoint: "sm",
-
       }}
     >
       <AppShell.Navbar>

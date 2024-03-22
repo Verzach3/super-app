@@ -1,4 +1,4 @@
-import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack} from "@mantine/core";
+import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack, Modal} from "@mantine/core";
 import {IconCaretRight} from "@tabler/icons-react";
 import {motion} from "framer-motion";
 import ShortCut from "~/components/patient/ShortCut";
@@ -11,21 +11,16 @@ import {useLoaderData, useNavigate, useNavigation} from "@remix-run/react";
 import {useEffect, useState} from "react";
 import {Patient} from "fhir/r4";
 import {createServerClient} from "~/util/supabase.server";
+import {useDisclosure} from "@mantine/hooks";
 
 export async function loader({request}: LoaderFunctionArgs) {
   const response = new Response();
   const supabase = createServerClient({request, response});
-  const authorized = await checkForRoles(["patient", "admin"], supabase);
-  if (!authorized) {
-    return json({error: "Unauthorized", status: 401}, {
-      status: 401
-    })
-  }
   const session = await supabase.auth.getSession();
   const profile = await supabase.from("patient_profiles").select("*").eq("user_id", session?.data.session?.user.id ?? "").single()
   if (!profile.data) {
-    return json({error: "User does'nt exist", status: 500}, {
-      status: 500
+    return json({error: "User does'nt exist", status: 418}, {
+      status: 418
     })
   }
   const data = await getPatientData(profile.data.emr_id)
@@ -40,7 +35,7 @@ function Patient_index() {
   const navigate = useNavigate();
   useEffect(() => {
     if ("error" in loaderData) {
-      console.log(loaderData.error)
+      console.log(loaderData.error, loaderData.status)
       if (loaderData.error === "Unauthorized") {
         navigate("/auth")
       }

@@ -2,6 +2,7 @@ import {Medication, Patient} from "fhir/r4";
 import getAxiosClientServer from "~/util/getAxiosClient.server";
 import {getToken} from "~/util/tokenUtil.server";
 import {AxiosRequestConfig, AxiosResponse} from "axios";
+import {refreshToken} from "~/util/refreshtoken.server";
 
 const baseURL = "https://" + process.env.EMR_BASE_URL ?? "";
 const fhirBaseURL = `${baseURL}/apis/default/fhir`;
@@ -16,9 +17,10 @@ async function makeRequest<T>(config: AxiosRequestConfig, retries = 0): Promise<
     console.log("Petición exitosa", res.status, res.data)
     return res
   } catch (error) {
-    console.log("Error en la petición", error, retries);
+    console.log("Error en la petición" , retries);
     if (retries < MAX_RETRIES) {
       // Esperar un tiempo antes de reintentar
+      await refreshToken()
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       return makeRequest<T>(config, retries + 1);
     } else {

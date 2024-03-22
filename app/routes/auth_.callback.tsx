@@ -11,7 +11,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return redirect('/', {
+  return redirect('/postauth', {
     status: 303,
     headers: response.headers
   });
