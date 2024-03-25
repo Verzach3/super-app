@@ -143,21 +143,42 @@ export type Database = {
       }
       patient_profiles: {
         Row: {
+          birth_date: string
           created_at: string
-          emr_id: string
+          emr_id: string | null
+          gender: string
           id: number
+          lastname: string
+          name: string
+          phone: string | null
+          second_lastname: string | null
+          second_name: string | null
           user_id: string
         }
         Insert: {
+          birth_date: string
           created_at?: string
-          emr_id?: string
+          emr_id?: string | null
+          gender: string
           id?: number
+          lastname: string
+          name: string
+          phone?: string | null
+          second_lastname?: string | null
+          second_name?: string | null
           user_id: string
         }
         Update: {
+          birth_date?: string
           created_at?: string
-          emr_id?: string
+          emr_id?: string | null
+          gender?: string
           id?: number
+          lastname?: string
+          name?: string
+          phone?: string | null
+          second_lastname?: string | null
+          second_name?: string | null
           user_id?: string
         }
         Relationships: [

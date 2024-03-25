@@ -8,6 +8,7 @@ function Postauth() {
     supabase.auth.onAuthStateChange((event, session) => {
       console.log("PostAuth", event)
       if (event === "SIGNED_IN") {
+        window.close()
       }
     })
   }, []);

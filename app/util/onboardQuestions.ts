@@ -1,6 +1,9 @@
 export const onboardQuestions = {
   "locale": "es",
-  "title": "Encuesta de Inicio",
+  "title": {
+    "default": "Encuesta de Inicio",
+    "es": "Conozcamonos"
+  },
   "logoPosition": "right",
   "pages": [
     {
@@ -8,7 +11,7 @@ export const onboardQuestions = {
       "elements": [
         {
           "type": "text",
-          "name": "question1",
+          "name": "name",
           "title": {
             "es": "Primer Nombre"
           },
@@ -16,14 +19,14 @@ export const onboardQuestions = {
         },
         {
           "type": "text",
-          "name": "question2",
+          "name": "second_name",
           "title": {
             "es": "Segundo Nombre"
           }
         },
         {
           "type": "text",
-          "name": "question3",
+          "name": "lastname",
           "title": {
             "es": "Primer Apellido"
           },
@@ -31,14 +34,14 @@ export const onboardQuestions = {
         },
         {
           "type": "text",
-          "name": "question4",
+          "name": "second_lastname",
           "title": {
             "es": "Segundo Apellido"
           }
         },
         {
           "type": "text",
-          "name": "question5",
+          "name": "birth_date",
           "title": {
             "es": "Fecha de Nacimiento"
           },
@@ -47,7 +50,7 @@ export const onboardQuestions = {
         },
         {
           "type": "radiogroup",
-          "name": "question6",
+          "name": "gender",
           "title": {
             "es": "¿Cuál es el género/sexo que le fue asignado al nacer?"
           },
@@ -69,7 +72,7 @@ export const onboardQuestions = {
         },
         {
           "type": "text",
-          "name": "question7",
+          "name": "phone",
           "title": {
             "es": "Numero de Telefono"
           },
