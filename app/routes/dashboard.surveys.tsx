@@ -1,37 +1,17 @@
-import {
-  ActionIcon,
-  Affix,
-  Button,
-  Card,
-  Group,
-  Input,
-  Menu,
-  rem,
-  Table,
-  Title,
-  Text,
-  Modal,
-  TextInput, JsonInput
-} from "@mantine/core";
+import {ActionIcon, Affix, Button, Group, Input, Modal, Title,} from "@mantine/core";
 import SurveysListItem from "~/components/dashboard/surveys/SurveysListItem";
-import {
-  IconArrowsLeftRight,
-  IconMessageCircle,
-  IconPhoto,
-  IconPlus,
-  IconSearch,
-  IconSettings, IconTrash
-} from "@tabler/icons-react";
-import SurveysAffixBtn from "~/components/dashboard/surveys/SurveysAffixBtn";
+import {IconPlus, IconSearch} from "@tabler/icons-react";
 import {useDisclosure} from "@mantine/hooks";
-import {useAtomValue} from "jotai";
-import {useEffect} from "react";
-import {json, LoaderFunctionArgs} from "@remix-run/node";
+import {useEffect, useState} from "react";
+import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
 import {useLoaderData} from "@remix-run/react";
 import {createServerClient} from "@supabase/auth-helpers-remix";
 import {Database} from "~/types/database.types";
 import process from "process";
 import {checkForRoles} from "~/util/checkForRole";
+import AsignSurvey from "~/components/dashboard/surveys/AsignSurvey";
+import {CardTable} from "~/components/dashboard/surveys/CardTable";
+import {CreateSurveyModal} from "~/components/dashboard/surveys/CreateSurveyModal";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const response = new Response();
@@ -39,88 +19,102 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     process.env.SUPABASE_URL ?? "",
     process.env.SUPABASE_ANON_KEY ?? "",
     {request, response}
-  )
+  );
   const authorized = await checkForRoles(["patient", "admin"], supabase);
   if (!authorized) {
-    return json({error: "Unauthorized", data: {}}, {
-      status: 401
-    })
+    return json(
+      {error: "Unauthorized", data: null},
+      {
+        status: 401,
+      }
+    );
   }
-  return json({data: (await supabase.from("surveys").select("*")).data, error: ""}, {
-    headers: response.headers
-  })
+  const patients = (await supabase.from("patient_profiles").select("*").limit(20)).data
+  const surveys = (await supabase.from("surveys").select("*")).data
+  return json(
+    {
+      data: {patients, surveys}, error: null
+    },
+    {
+      headers: response.headers,
+    }
+  );
+};
+
+export async function action({request}: ActionFunctionArgs) {
+  const response = new Response();
+  const supabase = createServerClient<Database>(
+    process.env.SUPABASE_URL ?? "",
+    process.env.SUPABASE_ANON_KEY ?? "",
+    {request, response}
+  );
+  const authorized = await checkForRoles(["patient", "admin"], supabase);
+  if (!authorized) {
+    return json(
+      {error: "Unauthorized", data: null},
+      {
+        status: 401,
+      }
+    );
+  }
+  return json(
+    {data: "Success", error: null},
+    {
+      headers: response.headers,
+    }
+  );
+
 }
 
 function DashboardSurveys() {
-  const [opened, {open, close}] = useDisclosure(false);
-  const {data} = useLoaderData<typeof loader>()
+  const [createOpened, {open: openCreate, close: closeCreate}] = useDisclosure(false);
+  const [asignOpened, {open: openAsign, close: closeAsign}] = useDisclosure(true);
+  const [asignSearch, setAsignSearch] = useState<string>("")
+  const loaderData = useLoaderData<typeof loader>();
   useEffect(() => {
-    console.log(data)
-  }, []);
+    console.log(loaderData);
+  }, [loaderData]);
+
+  useEffect(() => {
+
+  }, [asignSearch]);
+
+  if (loaderData.error) {
+    return <div>{loaderData.error}</div>;
+  }
+
   return (
     <>
-      <Modal pb={"xl"} size={"xl"} opened={opened} onClose={close} centered title={"Crear una Encuesta"} styles={{
-        title: {
-          fontFamily: "Inter",
-          fontWeight: 600
-        }
-      }}>
-        <TextInput label={"Nombre de la Encuesta"} placeholder={"Encuesta de satisfaccion"}/>
-        <JsonInput
-          variant={"filled"}
-          style={{
-            marginTop: "1rem"
-          }} label={"El JSON de la Encuesta"}
-          placeholder="{Hello: 'World'}"
-          validationError="Invalid JSON"
-          formatOnBlur
-          autosize
-          minRows={4}
-        />
-        <Affix position={{bottom: 10, right: 10}}>
-          <Button style={{marginTop: "1rem"}} color="teal" rightSection={<IconPlus/>}>
-            Crear
-          </Button>
-        </Affix>
+      <CreateSurveyModal opened={createOpened} onClose={closeCreate}/>
+      <Modal opened={asignOpened} onClose={closeAsign} withCloseButton={false}>
+        <AsignSurvey data={loaderData.data?.patients ?? []} setSearch={setAsignSearch} search={asignSearch}/>
       </Modal>
       <Affix position={{bottom: 10, right: 10}}>
-        <SurveysAffixBtn/>
+        {!(!asignOpened || !createOpened) && (
+          <ActionIcon size={"xl"} radius={100} onClick={openCreate}>
+            <IconPlus size={25}/>
+          </ActionIcon>
+        )}
       </Affix>
       <div style={{margin: "1rem"}}>
-        <Title style={{fontFamily: "Inter"}}>
-          Encuestas
-        </Title>
+        <Title style={{fontFamily: "Inter"}}>Encuestas</Title>
         <Group style={{marginBottom: "1rem", marginTop: "1rem"}}>
           <Input style={{flex: 1}}/>
-          <Button variant="light" style={{marginLeft: "1rem"}} rightSection={<IconSearch/>}>
+          <Button
+            variant="light"
+            style={{marginLeft: "1rem"}}
+            rightSection={<IconSearch/>}
+          >
             Search
           </Button>
         </Group>
 
-        <Card withBorder>
-          <Table>
-            <Table.Thead style={{
-              backgroundColor: "#f5f5f5",
-              borderColor: "#C6C6C6"
-            }}>
-              <Table.Tr>
-                <Table.Th
-                >Survey Name</Table.Th>
-                <Table.Th>Survey Description</Table.Th>
-                <Table.Th>Survey Status</Table.Th>
-                <Table.Th>Survey Date</Table.Th>
-                <Table.Th>Survey Link</Table.Th>
-                <Table.Th>Survey Actions</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {Array.from({length: 100}).map((_, i) => (<SurveysListItem key={i}/>))}
-            </Table.Tbody>
-          </Table>
-        </Card>
+        <CardTable loaderData={loaderData} callbackfn={(survey) => (
+          <SurveysListItem key={survey.id} survey={survey}/>
+        )}/>
       </div>
     </>
-  )
+  );
 }
 
 export default DashboardSurveys;

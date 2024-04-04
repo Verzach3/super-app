@@ -1,8 +1,6 @@
 import {AppShell} from "@mantine/core";
 import {DashNav} from "~/components/dashboard/DashNav";
 import {Outlet, useOutletContext} from "@remix-run/react";
-import {Session, SupabaseClient} from "@supabase/auth-helpers-remix";
-import {Database} from "~/types/database.types";
 import {useEffect} from "react";
 import OutletContext from "~/types/OutletContext";
 

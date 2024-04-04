@@ -1,17 +1,18 @@
-import {Menu, rem, Table, Text, Button, Title} from "@mantine/core";
+import {Menu, rem, Table, Text, Button, Title, ThemeIcon, Center} from "@mantine/core";
 
 import {useDisclosure} from "@mantine/hooks";
 import {
   IconApps,
-  IconArrowsLeftRight, IconDropletDown, IconEye,
+  IconArrowsLeftRight, IconDropletDown, IconEye, IconLink,
   IconMessageCircle, IconPencil,
   IconPhoto, IconReport,
   IconSearch,
   IconSettings,
-  IconTrash
+  IconTrash, IconUserPlus
 } from "@tabler/icons-react";
+import {Survey} from "~/types/DBTypes";
 
-function SurveysListItem() {
+function SurveysListItem({survey}: { survey: Survey }) {
   const [opened, {open, close}] = useDisclosure(false)
   return (
     <>
@@ -19,26 +20,38 @@ function SurveysListItem() {
         e.preventDefault()
         open()
       }}>
-        <Table.Td>Survey Name</Table.Td>
-        <Table.Td>Survey Description</Table.Td>
+        <Table.Td>{survey.name ?? ""}</Table.Td>
+        <Table.Td>
+          <Text lineClamp={1}>
+            {survey.description}
+          </Text>
+        </Table.Td>
         <Table.Td>Survey Status</Table.Td>
         <Table.Td>Survey Date</Table.Td>
         <Table.Td>
-          <Text>
-            Link
-          </Text>
+          <Center>
+            <Text>
+              Link
+            </Text>
+            <ThemeIcon variant={"white"} color={"black"} styles={{root: {border: 0}}}>
+              <IconLink size={20}/>
+            </ThemeIcon>
+          </Center>
         </Table.Td>
         <Table.Td>
           <Menu trigger={"click"}>
             <Menu.Target>
               <Button rightSection={<IconApps/>} variant={"light"}>
-                Actions
+                Acciones
               </Button>
             </Menu.Target>
             <Menu.Dropdown>
-            <Menu.Label>Encuesta</Menu.Label>
+              <Menu.Label>Encuesta</Menu.Label>
               <Menu.Item leftSection={<IconPencil style={{width: rem(14), height: rem(14)}}/>}>
                 Editar
+              </Menu.Item>
+              <Menu.Item leftSection={<IconUserPlus style={{width: rem(14), height: rem(14)}}/>}>
+                Asignar
               </Menu.Item>
               <Menu.Item leftSection={<IconEye style={{width: rem(14), height: rem(14)}}/>}>
                 Preview

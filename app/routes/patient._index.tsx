@@ -1,17 +1,16 @@
-import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack, Modal} from "@mantine/core";
+import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack} from "@mantine/core";
 import {IconCaretRight} from "@tabler/icons-react";
 import {motion} from "framer-motion";
 import ShortCut from "~/components/patient/ShortCut";
 import {Carousel} from "@mantine/carousel";
 import {FaUserDoctor} from "react-icons/fa6";
 import {json, LoaderFunctionArgs} from "@remix-run/node";
-import {checkForRoles} from "~/util/checkForRole";
 import {getPatientData} from "~/util/emrAPI.server";
-import {useLoaderData, useNavigate, useNavigation} from "@remix-run/react";
+import {useLoaderData, useNavigate} from "@remix-run/react";
 import {useEffect, useState} from "react";
 import {Patient} from "fhir/r4";
 import {createServerClient} from "~/util/supabase.server";
-import {useDisclosure} from "@mantine/hooks";
+import {PatientProfile} from "~/types/DBTypes";
 
 export async function loader({request}: LoaderFunctionArgs) {
   const response = new Response();
@@ -23,8 +22,19 @@ export async function loader({request}: LoaderFunctionArgs) {
       status: 418
     })
   }
-  const data = await getPatientData(profile.data.emr_id)
-  return json({patient: data}, {
+
+  let data = null;
+  if (profile.data.emr_id) {
+    console.log("Getting patient data")
+    try {
+      data = await getPatientData(profile.data.emr_id)
+    } catch (e) {
+      return json({error: "Error al obtener datos del paciente", status: 500}, {
+        status: 500
+      })
+    }
+  }
+  return json({patient: data, profile: profile}, {
     headers: response.headers
   })
 }
@@ -32,6 +42,7 @@ export async function loader({request}: LoaderFunctionArgs) {
 function Patient_index() {
   const loaderData = useLoaderData<typeof loader>()
   const [patient, setPatient] = useState<Patient | null>(null)
+  const [profile, setProfile] = useState<PatientProfile | null>(null)
   const navigate = useNavigate();
   useEffect(() => {
     if ("error" in loaderData) {
@@ -40,9 +51,11 @@ function Patient_index() {
         navigate("/auth")
       }
     }
-    if (Object.hasOwn(loaderData, "patient")) {
-      // @ts-ignore
+    if ("patient" in loaderData) {
       setPatient(loaderData?.patient)
+    }
+    if ("profile" in loaderData) {
+      setProfile(loaderData?.profile.data)
     }
   }, []);
 
@@ -78,12 +91,14 @@ function Patient_index() {
           </Card>
         </motion.div>
         <Container w={"100%"}>
-          <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, {patient?.name?.[0].given ?? ""}</Title>
+          <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, {profile?.name}</Title>
           <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
         </Container>
         <Container style={{width: "100vw", overflowX: "hidden"}} p={0}>
           <Carousel slideGap={"xs"} withIndicators slideSize={"10%"} align={"start"}
-                    withControls={false}>
+                    withControls={false}
+                    slidesToScroll={"auto"}
+          >
             <Carousel.Slide>
               <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
                         description={"Paga tu factura de manera segura y rápida"}/>

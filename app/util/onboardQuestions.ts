@@ -1,9 +1,6 @@
 export const onboardQuestions = {
   "locale": "es",
-  "title": {
-    "default": "Encuesta de Inicio",
-    "es": "Conozcamonos"
-  },
+  "title": "Encuesta de Inicio",
   "logoPosition": "right",
   "pages": [
     {
@@ -57,13 +54,13 @@ export const onboardQuestions = {
           "isRequired": true,
           "choices": [
             {
-              "value": "Item 1",
+              "value": "M",
               "text": {
                 "es": "Masculino"
               }
             },
             {
-              "value": "Item 2",
+              "value": "F",
               "text": {
                 "es": "Femenino"
               }
