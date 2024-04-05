@@ -1,5 +1,5 @@
-import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack} from "@mantine/core";
-import {IconCaretRight} from "@tabler/icons-react";
+import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack, ThemeIcon} from "@mantine/core";
+import {IconCaretRight, IconSquare} from "@tabler/icons-react";
 import {motion} from "framer-motion";
 import ShortCut from "~/components/patient/ShortCut";
 import {Carousel} from "@mantine/carousel";
@@ -23,6 +23,7 @@ export async function loader({request}: LoaderFunctionArgs) {
     })
   }
 
+
   let data = null;
   if (profile.data.emr_id) {
     console.log("Getting patient data")
@@ -38,6 +39,7 @@ export async function loader({request}: LoaderFunctionArgs) {
     headers: response.headers
   })
 }
+
 
 function Patient_index() {
   const loaderData = useLoaderData<typeof loader>()
@@ -92,6 +94,34 @@ function Patient_index() {
         </motion.div>
         <Container w={"100%"}>
           <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, {profile?.name}</Title>
+        </Container>
+        <Container>
+          <Title mb={"md"}>
+            Encuestas
+          </Title>
+          <Card withBorder shadow={"lg"}>
+            <Card.Section style={{
+              paddingInline: "2rem",
+              paddingTop: "2rem"
+            }}>
+              <Text ta={"center"} fw={600}>
+                Nombre de la encuesta
+              </Text>
+              <Center>
+                <ThemeIcon variant={"white"} color={"orange"} size={"xl"}>
+                  <IconSquare size={40}/>
+                </ThemeIcon>
+              </Center>
+            </Card.Section>
+            <Card.Section style={{paddingInline: "2rem", paddingBottom: "2rem"}}>
+                <Text ta={"center"} size={"sm"} c={"orange"}>
+                  No completada
+                </Text>
+            </Card.Section>
+          </Card>
+        </Container>
+
+        <Container w={"100%"}>
           <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
         </Container>
         <Container style={{width: "100vw", overflowX: "hidden"}} p={0}>
