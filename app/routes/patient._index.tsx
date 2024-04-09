@@ -1,8 +1,18 @@
-import {Container, Title, Text, Image, Card, Center, Group, SimpleGrid, Stack, ThemeIcon} from "@mantine/core";
+import {
+  Card,
+  Center,
+  Container,
+  Group,
+  Image,
+  Progress,
+  SimpleGrid,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title, UnstyledButton
+} from "@mantine/core";
 import {IconCaretRight, IconSquare} from "@tabler/icons-react";
 import {motion} from "framer-motion";
-import ShortCut from "~/components/patient/ShortCut";
-import {Carousel} from "@mantine/carousel";
 import {FaUserDoctor} from "react-icons/fa6";
 import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {getPatientData} from "~/util/emrAPI.server";
@@ -11,6 +21,7 @@ import {useEffect, useState} from "react";
 import {Patient} from "fhir/r4";
 import {createServerClient} from "~/util/supabase.server";
 import {PatientProfile} from "~/types/DBTypes";
+import {PatientShortcuts} from "~/components/dashboard/patients/PatientShortcuts";
 
 export async function loader({request}: LoaderFunctionArgs) {
   const response = new Response();
@@ -22,6 +33,8 @@ export async function loader({request}: LoaderFunctionArgs) {
       status: 418
     })
   }
+
+  const surveys = await supabase.from("surveys_asigns").select("surveys (*), answer_id")
 
 
   let data = null;
@@ -35,7 +48,7 @@ export async function loader({request}: LoaderFunctionArgs) {
       })
     }
   }
-  return json({patient: data, profile: profile}, {
+  return json({patient: data, profile: profile, surveys: surveys.data}, {
     headers: response.headers
   })
 }
@@ -47,6 +60,7 @@ function Patient_index() {
   const [profile, setProfile] = useState<PatientProfile | null>(null)
   const navigate = useNavigate();
   useEffect(() => {
+    console.log(loaderData)
     if ("error" in loaderData) {
       console.log(loaderData.error, loaderData.status)
       if (loaderData.error === "Unauthorized") {
@@ -68,6 +82,7 @@ function Patient_index() {
   return (
     <div style={{paddingBottom: "10rem"}}>
       <Image src={"/consultory.avif"} style={{objectFit: "cover", width: "100%", height: "25rem"}}/>
+      {/* Appointment button */}
       <div style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-end", height: "100%"}}>
         <motion.div
           style={{
@@ -95,58 +110,70 @@ function Patient_index() {
         <Container w={"100%"}>
           <Title ta={"left"} mt={"xss"} style={{fontFamily: "Inter"}}>Hola, {profile?.name}</Title>
         </Container>
-        <Container>
-          <Title mb={"md"}>
-            Encuestas
-          </Title>
-          <Card withBorder shadow={"lg"}>
-            <Card.Section style={{
-              paddingInline: "2rem",
-              paddingTop: "2rem"
-            }}>
-              <Text ta={"center"} fw={600}>
-                Nombre de la encuesta
-              </Text>
-              <Center>
-                <ThemeIcon variant={"white"} color={"orange"} size={"xl"}>
-                  <IconSquare size={40}/>
-                </ThemeIcon>
-              </Center>
-            </Card.Section>
-            <Card.Section style={{paddingInline: "2rem", paddingBottom: "2rem"}}>
-                <Text ta={"center"} size={"sm"} c={"orange"}>
-                  No completada
-                </Text>
-            </Card.Section>
-          </Card>
-        </Container>
-
         <Container w={"100%"}>
           <Text ta={"left"} size="xl" fw={600} mt={"xl"} mb={"xl"}>Accesos Directos</Text>
         </Container>
+
+        {/* Shortcuts */}
         <Container style={{width: "100vw", overflowX: "hidden"}} p={0}>
-          <Carousel slideGap={"xs"} withIndicators slideSize={"10%"} align={"start"}
-                    withControls={false}
-                    slidesToScroll={"auto"}
-          >
-            <Carousel.Slide>
-              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                        description={"Paga tu factura de manera segura y rápida"}/>
-            </Carousel.Slide>
-            <Carousel.Slide>
-              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                        description={"Paga tu factura de manera segura y rápida"}/>
-            </Carousel.Slide>
-            <Carousel.Slide>
-              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                        description={"Paga tu factura de manera segura y rápida"}/>
-            </Carousel.Slide>
-            <Carousel.Slide>
-              <ShortCut image={"/consultory.avif"} title={"Pagar Facturas"}
-                        description={"Paga tu factura de manera segura y rápida"}/>
-            </Carousel.Slide>
-          </Carousel>
+          <PatientShortcuts/>
         </Container>
+
+        {/* Encuestas Disponibles */}
+        <Container w={"100%"}>
+          <Stack>
+            <Center>
+              <Title ta={"center"} ff={"Inter"} order={3} fw={600} mt={"4rem"} mb={"md"}>Encuestas Disponibles</Title>
+            </Center>
+            {loaderData.surveys?.length ?? 0 > 0 ?
+              <>
+                <SimpleGrid cols={1}>
+                  {loaderData.surveys && loaderData.surveys.map((survey) => {
+                    if (!survey.surveys) {
+                      return null
+                    }
+                    return (
+                      <Card withBorder shadow={"lg"} key={survey.surveys.id}>
+                        <Group justify={"space-between"} gap={0}>
+                          <Stack gap={0}>
+                            <Text fw={"bold"} size={"lg"} ff={"Inter"}>
+                              {survey.surveys.name}
+                            </Text>
+                            <Text lineClamp={1} ff={"Inter"} fw={400}>
+                              {survey.surveys.description}
+                            </Text>
+                          </Stack>
+                          <Stack gap={0}>
+                            <Progress value={100} color={survey.answer_id !== null ? "green" : "orange"}/>
+                            <Text>
+                              {survey.answer_id ? "Completada" : "No Completada"}
+                            </Text>
+                          </Stack>
+                        </Group>
+                      </Card>
+                    )
+                  })}
+                </SimpleGrid>
+                <Container fluid>
+                  <UnstyledButton onClick={() => navigate("/patient/surveys")}>
+                    <Text fw={800} ff={"Inter"}>
+                      Ver Mas...
+                    </Text>
+                  </UnstyledButton>
+                </Container>
+              </>
+              :
+              <Container mb={"md"}>
+                <Text fw={700} ff={"Inter"} c={"gray"}>
+                  No tienes encuestas disponibles.
+                </Text>
+              </Container>
+            }
+          </Stack>
+        </Container>
+
+        {/* Recibe Atencion Widget*/
+        }
         <Container>
           <Stack>
             <Center>

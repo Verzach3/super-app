@@ -53,7 +53,7 @@ function DashboardPatients() {
   const revalidator = useRevalidator();
   useEffect(() => {
     console.log(data)
-    if (Object.hasOwn(data, "error")) {
+    if ("error" in data && data.error !== "Unauthorized") {
       revalidator.revalidate();
       return
     }

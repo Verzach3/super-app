@@ -1,11 +1,20 @@
 import {AppShell} from "@mantine/core";
 import {DashNav} from "~/components/dashboard/DashNav";
-import {Outlet, useOutletContext} from "@remix-run/react";
+import {Outlet, useNavigate, useOutletContext} from "@remix-run/react";
 import {useEffect} from "react";
 import OutletContext from "~/types/OutletContext";
 
 export default function Dashboard() {
   const {supabase, session} = useOutletContext<OutletContext>();
+  const navigate = useNavigate();
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        navigate("/")
+      }
+    })
+  }, []);
+
   useEffect(() => {
     void checkSession()
   }, []);

@@ -2,7 +2,15 @@ import {useEffect, useRef, useState} from 'react';
 import {UnstyledButton, Tooltip, Title, rem, Text} from '@mantine/core';
 import {
     IconHome2
-    , IconCalendarMonth, IconFileSpreadsheet, IconFirstAidKit, IconFileInvoice, IconLibrary, IconMessages,
+    ,
+    IconCalendarMonth,
+    IconFileSpreadsheet,
+    IconFirstAidKit,
+    IconFileInvoice,
+    IconLibrary,
+    IconMessages,
+    IconLogout,
+    IconLogout2,
 } from '@tabler/icons-react';
 import classes from '../../styles/patient/NavBar.module.css';
 import autoAnimate from "@formkit/auto-animate";
@@ -29,9 +37,9 @@ const navLinks: LinksType = {
         {name: "Inicio", path:"/patient/"},
         {name: "Analisis", path: "/patient/lab-results"},
         {name: "Medicamentos", path: "/patient/medications"},
+        {name: "Encuestas", path: "/patient/surveys"},
         {name: "Renovar mi receta medica"},
         {name: "Pagar Factura"},
-
     ],
     "Citas": [
         {name: "Tus citas"}
@@ -120,12 +128,23 @@ export default function NavBar() {
         <div className={classes.navbar}>
             <div className={classes.wrapper}>
                 <div className={classes.aside}>
+                    <div style={{ height: "100%"}}>
                     <div className={classes.logo}>
                         <Text>
                             Logo
                         </Text>
                     </div>
                     {mainLinks}
+                    </div>
+                    <div>
+                        <UnstyledButton
+                          onClick={() => {}}
+                          className={classes.mainLink}
+                          style={{ marginBottom: "1rem"}}
+                        >
+                            <IconLogout2 style={{width: rem(22), height: rem(22)}} stroke={1.5}/>
+                        </UnstyledButton>
+                    </div>
                 </div>
                 <div className={classes.main} ref={parent}>
                     <Title order={4} className={classes.title}>

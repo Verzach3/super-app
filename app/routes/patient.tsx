@@ -1,4 +1,12 @@
-import {Outlet, useActionData, useLoaderData, useOutletContext, useRevalidator, useSubmit} from "@remix-run/react";
+import {
+  Outlet,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useOutletContext,
+  useRevalidator,
+  useSubmit
+} from "@remix-run/react";
 import {AppShell, LoadingOverlay, Modal, rem} from "@mantine/core";
 import React, {useCallback, useEffect} from "react";
 import {Header} from "~/components/patient/Header";
@@ -81,6 +89,7 @@ export async function action({request}: ActionFunctionArgs) {
 
 
 function Patient() {
+  const navigate = useNavigate()
   const loaderData = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>();
   const [loaderOverlays, {open: openLoader, close: closeLoader}] = useDisclosure();
@@ -94,6 +103,9 @@ function Patient() {
     if ("error" in loaderData) {
       if (loaderData.status === 418) {
         open()
+      }
+      if (loaderData.status === 401) {
+        navigate("/")
       }
     }
   }, []);
@@ -132,7 +144,14 @@ function Patient() {
         width: rem("300px"),
         breakpoint: "sm",
         collapsed: {mobile: !mobileOpened, desktop: !desktopOpened},
-      }}>
+      }}
+      styles={{
+        main: {
+          overflowY: "auto",
+          maxHeight: "100%"
+        }
+      }}
+      >
         <AppShell.Header>
           <Header/>
         </AppShell.Header>

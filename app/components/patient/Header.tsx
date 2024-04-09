@@ -26,6 +26,7 @@ import {
 } from '@tabler/icons-react';
 import classes from '../../styles/patient/Header.module.css';
 import HeaderMessage from "~/components/patient/HeaderMessage";
+import {useNavigate} from "@remix-run/react";
 
 const mockdata = [
   {
@@ -63,10 +64,11 @@ const mockdata = [
 export function Header() {
   const [drawerOpened, {toggle: toggleDrawer, close: closeDrawer}] = useDisclosure(false);
   const [linksOpened, {toggle: toggleLinks}] = useDisclosure(false);
+  const navigate = useNavigate();
   const theme = useMantineTheme();
 
   const links = mockdata.map((item) => (
-    <UnstyledButton className={classes.subLink} key={item.title}>
+    <UnstyledButton className={classes.subLink} key={item.toString()}>
       <Group wrap="nowrap" align="flex-start">
         <ThemeIcon size={34} variant="default" radius="md">
           <item.icon style={{width: rem(22), height: rem(22)}} color={theme.colors.blue[6]}/>
@@ -115,14 +117,16 @@ export function Header() {
                 </div>
               </Popover.Dropdown>
             </Popover>
-            <Button
-              variant="default"
-              radius={100}
-              leftSection={<IconUserCircle/>}
-              rightSection={<IconChevronDown/>}
-            >
-              Mi Cuenta
-            </Button>
+            {/* Profile Button */}
+
+                <Button
+                  variant="default"
+                  radius={100}
+                  leftSection={<IconUserCircle/>}
+                  onClick={() => navigate("/patient/account")}
+                >
+                  Mi Cuenta
+                </Button>
           </Group>
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm"/>

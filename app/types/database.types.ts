@@ -278,6 +278,52 @@ export type Database = {
           },
         ]
       }
+      surveys_asigns: {
+        Row: {
+          answer_id: number | null
+          created_at: string
+          id: number
+          survey_id: string
+          user_id: string
+        }
+        Insert: {
+          answer_id?: number | null
+          created_at?: string
+          id?: number
+          survey_id: string
+          user_id: string
+        }
+        Update: {
+          answer_id?: number | null
+          created_at?: string
+          id?: number
+          survey_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_surveys_asigns_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: true
+            referencedRelation: "surveys_answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_surveys_asigns_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_surveys_asigns_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string

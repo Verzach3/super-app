@@ -35,7 +35,7 @@ export async function loader({request}: LoaderFunctionArgs) {
     })
   }
 
-  const medications = await getPatientMedication(profile.data.emr_id);
+  const medications = await getPatientMedication(profile.data.emr_id!);
   return json({medications}, {
     headers: response.headers
   })
