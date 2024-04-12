@@ -1,5 +1,5 @@
 import {Patient} from "fhir/r4";
-import {PatientProfile} from "~/types/database.types";
+import type {PatientProfile} from "~/types/DBTypes";
 
 class CompoundPatient {
   constructor(

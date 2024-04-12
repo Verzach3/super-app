@@ -145,12 +145,6 @@ function Patient() {
         breakpoint: "sm",
         collapsed: {mobile: !mobileOpened, desktop: !desktopOpened},
       }}
-      styles={{
-        main: {
-          overflowY: "auto",
-          maxHeight: "100%"
-        }
-      }}
       >
         <AppShell.Header>
           <Header/>
