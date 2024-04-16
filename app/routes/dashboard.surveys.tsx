@@ -1,8 +1,30 @@
-import {ActionIcon, Affix, Button, Group, Input, Modal, Title,} from "@mantine/core";
+import {
+  ActionIcon,
+  Affix,
+  Button,
+  Card,
+  Group,
+  Input,
+  Modal,
+  SimpleGrid,
+  Stack,
+  Title,
+  Text,
+  Container,
+  Center, Grid, ThemeIcon, Select, Badge, SegmentedControl, rem
+} from "@mantine/core";
 import SurveysListItem from "~/components/dashboard/surveys/SurveysListItem";
-import {IconPlus, IconSearch} from "@tabler/icons-react";
+import {
+  IconChevronDown,
+  IconDots,
+  IconDotsVertical,
+  IconLayoutGrid, IconLayoutList,
+  IconPlus,
+  IconSearch,
+  IconUser
+} from "@tabler/icons-react";
 import {useDisclosure} from "@mantine/hooks";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
 import {useLoaderData} from "@remix-run/react";
 import {createServerClient} from "@supabase/auth-helpers-remix";
@@ -68,7 +90,6 @@ export async function action({request}: ActionFunctionArgs) {
 
 function DashboardSurveys() {
   const [createOpened, {open: openCreate, close: closeCreate}] = useDisclosure(false);
-  const [asignOpened, {open: openAsign, close: closeAsign}] = useDisclosure(true);
   const [asignSearch, setAsignSearch] = useState<string>("")
   const loaderData = useLoaderData<typeof loader>();
   useEffect(() => {
@@ -86,18 +107,40 @@ function DashboardSurveys() {
   return (
     <>
       <CreateSurveyModal opened={createOpened} onClose={closeCreate}/>
-      <Modal opened={asignOpened} onClose={closeAsign} withCloseButton={false}>
-        <AsignSurvey data={loaderData.data?.patients ?? []} setSearch={setAsignSearch} search={asignSearch}/>
-      </Modal>
-      <Affix position={{bottom: 10, right: 10}}>
-        {!(!asignOpened || !createOpened) && (
-          <ActionIcon size={"xl"} radius={100} onClick={openCreate}>
-            <IconPlus size={25}/>
-          </ActionIcon>
-        )}
-      </Affix>
       <div style={{margin: "1rem"}}>
-        <Title style={{fontFamily: "Inter"}}>Encuestas</Title>
+        <Group grow justify={"space-between"}>
+          <Title style={{fontFamily: "Inter"}}>Encuestas</Title>
+          <Group justify={"flex-end"}>
+            <Button radius={"lg"} variant={"light"} rightSection={<IconChevronDown/>}>
+              Programas
+            </Button>
+            <SegmentedControl
+              radius={"lg"}
+              color={"blue"}
+              data={[
+                {
+                  value: "grid",
+                  label: (
+                    <Center style={{gap: 10}}>
+                      <IconLayoutGrid style={{width: rem(16), height: rem(16)}}/>
+                    </Center>
+                  )
+                },
+                {
+                  value: "list",
+                  label: (
+                    <Center style={{gap: 10}}>
+                      <IconLayoutList style={{width: rem(16), height: rem(16)}}/>
+                    </Center>
+                  )
+                }
+              ]}
+            />
+            <Button radius={"lg"}>
+              Crear
+            </Button>
+          </Group>
+        </Group>
         <Group style={{marginBottom: "1rem", marginTop: "1rem"}}>
           <Input style={{flex: 1}}/>
           <Button
@@ -108,13 +151,87 @@ function DashboardSurveys() {
             Search
           </Button>
         </Group>
-
+        <Grid mb={"md"}>
+          <Grid.Col span={{base: 12, md: 6, lg: 4}}>
+            <Card>
+              <Card.Section>
+                <Card withBorder radius={"lg"} shadow={"md"}>
+                  <Card.Section>
+                    <Container mt={"md"}>
+                      <Badge size={"md"}>
+                        Programa
+                      </Badge>
+                    </Container>
+                  </Card.Section>
+                  <Card.Section>
+                    <Center>
+                      <Stack>
+                        <Container>
+                          <Text size={"2rem"} fw={700} ta={"center"} ff={"Inter"}>
+                            1,240
+                          </Text>
+                          <Text size={"sm"} ta={"center"} ff={"Inter"} fw={600} c={"gray"}>
+                            Responses
+                          </Text>
+                        </Container>
+                      </Stack>
+                      <Stack>
+                        <Container my={"xl"}>
+                          <Center>
+                            <Text size={"2rem"} fw={700} ta={"center"} ff={"Inter"}>
+                              7.65
+                            </Text>
+                            <Text size={"1rem"} fw={700} ta={"center"} ff={"Inter"} c={"gray"}
+                                  style={{alignContent: "center"}}>%</Text>
+                          </Center>
+                          <Text size={"sm"} ta={"center"} ff={"Inter"} fw={600} c={"gray"}>
+                            Responses
+                          </Text>
+                        </Container>
+                      </Stack>
+                    </Center>
+                  </Card.Section>
+                  <Card.Section>
+                    <Container fluid mb={"xs"}>
+                      <Center style={{justifyContent: "left"}}>
+                        <ThemeIcon variant={"white"} c={"gray"} size={"sm"}>
+                          <IconUser/>
+                        </ThemeIcon>
+                        <Text size={"xs"} ff={"Inter"} fw={700}>
+                          120 Asignados
+                        </Text>
+                      </Center>
+                    </Container>
+                  </Card.Section>
+                </Card>
+              </Card.Section>
+              <Card.Section>
+                <Group grow justify={"space-between"}>
+                  <Group grow my={"xs"} justify={"flex-start"} ml={"md"}>
+                    <Stack gap={0}>
+                      <Text ta={"left"} size={"md"} ff={"Inter"} fw={600}>
+                        Titulo de la Encuesta
+                      </Text>
+                      <Text size={"xs"} ff={"Inter"} c={"gray"} fw={600}>
+                        Ultima respuesta: Agosto 12, 2021 a las 12:00 PM
+                      </Text>
+                    </Stack>
+                  </Group>
+                  <ActionIcon variant={"white"} c={"gray"} size={"md"}>
+                    <IconDots/>
+                  </ActionIcon>
+                </Group>
+              </Card.Section>
+            </Card>
+          </Grid.Col>
+        </Grid>
         <CardTable loaderData={loaderData} callbackfn={(survey) => (
           <SurveysListItem key={survey.id} survey={survey}/>
         )}/>
       </div>
     </>
-  );
+  )
+    ;
 }
 
 export default DashboardSurveys;

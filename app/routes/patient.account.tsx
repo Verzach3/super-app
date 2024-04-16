@@ -4,11 +4,11 @@ import {DatePickerInput} from "@mantine/dates";
 function PatientAccount() {
   return (
     <Container mt={"xl"}>
-      <Text size={"2rem"} ff={"Inter"} fw={600}>
+      <Text size={"2rem"} ff={"Inter"} fw={700}>
         Perfil
       </Text>
       <Text ff={"Inter"} fw={400} size={"lg"} mt={"md"}>
-        Update your account information. Changes will be reflected across the platform.
+        Actualiza la informacion de tu cuenta.
       </Text>
 
       <SimpleGrid cols={{sm: 1, md: 2}}>

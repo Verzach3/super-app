@@ -5,15 +5,22 @@ import {LoaderFunctionArgs, json, ActionFunctionArgs} from "@remix-run/node";
 import {createServerClient} from "~/util/supabase.server";
 import {useLoaderData, useNavigate, useSubmit} from "@remix-run/react";
 import {useCallback, useEffect, useState} from "react";
-import {Container, Title, Text} from "@mantine/core";
+import {Container, Title, Text, Center} from "@mantine/core";
 import {useInterval} from "@mantine/hooks";
+import {createClient} from "@supabase/supabase-js";
 
 const {Model} = svyCore;
-const {Survey} = svyUi
+const {Survey} = svyUi;
 
 export async function action({request, params}: ActionFunctionArgs) {
   const response = new Response();
   const supabase = createServerClient({request, response});
+  const supabaseAdmin = createClient(process.env.SUPABASE_URL ?? "", process.env.SUPABASE_SERVICE_KEY ?? "", {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
   console.log("Action Called")
   console.log("Params" + params);
   const formData = await request.formData();
@@ -36,14 +43,30 @@ export async function action({request, params}: ActionFunctionArgs) {
       }
     );
   }
-  const {error: error2} = await supabase.from("surveys_answers").insert(
+
+  const {
+    data: surveyAsign,
+    error: surveyAsignError
+  } = await supabase.from("surveys_asigns").select("*").eq("survey_id", params["survey"]).single();
+
+  if (surveyAsignError) {
+    return json(
+      {error: "Error getting survey", status: 500},
+      {
+        status: 500
+      }
+    );
+  }
+
+  const {error: answerCreateError, data: createdAnswer} = await supabaseAdmin.from("surveys_answers").insert(
     {
       survey: params["survey"],
       respondent: data.session.user.id,
-      answer: JSON.stringify(formDataObj)
+      answer: JSON.parse(JSON.stringify(formDataObj))
     }
-  );
-  if (error2) {
+  ).select().single();
+  if (answerCreateError) {
+    console.log("Error creating answer: ", answerCreateError)
     return json(
       {error: "Error saving survey", status: 500},
       {
@@ -52,7 +75,25 @@ export async function action({request, params}: ActionFunctionArgs) {
     );
   }
 
-  return null
+  const {error: updateAsignError, data: updatedAsign} = await supabaseAdmin.from("surveys_asigns").update({
+    answer_id: createdAnswer.id
+  }).eq("id", surveyAsign.id).select();
+  if (updateAsignError) {
+    console.log("Error updating asign: ", updateAsignError)
+    return json(
+      {error: "Error saving survey", status: 500},
+      {
+        status: 500
+      }
+    );
+  }
+  console.log("Update Asign Completed: ", updatedAsign)
+  return json(
+    {success: true},
+    {
+      headers: response.headers
+    }
+  );
 }
 
 export async function loader({request, params}: LoaderFunctionArgs) {
@@ -100,7 +141,7 @@ function Surveys() {
   const submit = useSubmit();
   const surveyComplete = useCallback((result: svyCore.Model) => {
     console.log("Survey results: " + JSON.stringify(result.data, null, 3));
-    submit(result.data, {method: "post"})
+    submit(result.data, {method: "post"});
     setSurveyCompleted(true);
   }, [])
   const surveyData = useLoaderData<typeof loader>();
@@ -115,9 +156,9 @@ function Surveys() {
 
   useEffect(() => {
     if (surveyCompleted) {
-      interval.start()
+      interval.start();
     }
-    return interval.stop
+    return interval.stop;
   }, [surveyCompleted]);
 
   if ("error" in surveyData) {
@@ -126,13 +167,19 @@ function Surveys() {
   }
 
   const survey = new Model(surveyData.survey.json);
-  survey.onComplete.add(surveyComplete)
+  survey.onComplete.add(surveyComplete);
   if (surveyCompleted) {
     return (
-      <Container>
-        <Title>Survey Completed</Title>
-        <Text>Thank you for completing the survey</Text>
-        <Text>Redirecting to surveys in {5 - seconds} seconds</Text>
+      <Container fluid h={"100%"} style={{
+        flex: 1
+      }}>
+        <Center h={"100%"} >
+          <Container mt={"xl"}>
+            <Title ff={"Inter"} ta={"center"} >Encuesta Completada</Title>
+            <Text ff={"Inter"} ta={"center"} size={"md"} >Gracias por completar la encuesta</Text>
+            <Text ff={"Inter"} ta={"center"}>Te vamos a redirigir a Encuestas en {5 - seconds} segundos</Text>
+          </Container>
+        </Center>
       </Container>
     )
   }
