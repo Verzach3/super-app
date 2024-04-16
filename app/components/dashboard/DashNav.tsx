@@ -6,10 +6,8 @@ import {
 } from '@tabler/icons-react';
 import classes from '../../styles/dashboard/DashNav.module.css';
 import {UserButton} from "~/components/dashboard/UserButton";
-import {Link, useLoaderData, useLocation, useOutletContext} from "@remix-run/react";
-import {json, LoaderFunctionArgs} from "@remix-run/node";
-import {createServerClient} from "~/util/supabase.server";
-import {SupabaseClient} from "@supabase/auth-helpers-remix";
+import {Link, useLocation, useOutletContext} from "@remix-run/react";
+import {Session, SupabaseClient} from "@supabase/auth-helpers-remix";
 
 const data = [
   {link: '/dashboard', label: 'Inicio', icon: IconLayoutDashboard},
@@ -26,9 +24,19 @@ export function DashNav() {
   const navigation = useLocation();
   const [active, setActive] = useState("Encuestas");
   const {supabase} = useOutletContext<{ supabase: SupabaseClient }>();
+  const [session, setSession] = useState<Session | null>(null);
 
   async function handleLogout() {
     await supabase.auth.signOut();
+  }
+
+  async function setSessionData() {
+    const ses = await supabase.auth.getSession()
+    if (ses.error || !ses.data.session) {
+      return
+    }
+    setSession(ses.data.session)
+    console.log(ses.data.session)
   }
 
   useEffect(() => {
@@ -43,6 +51,13 @@ export function DashNav() {
       setActive("Inicio");
     }
   }, [navigation]);
+
+  useEffect(() => {
+    void setSessionData()
+    supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+    });
+  }, []);
 
   const links = data.map((item) => (
     <Link
@@ -74,7 +89,7 @@ export function DashNav() {
       </div>
 
       <div className={classes.footer}>
-        <UserButton/>
+        <UserButton session={session ?? undefined}/>
         <a className={classes.link} onClick={(event) => {
           event.preventDefault()
           handleLogout().then(r => console.log(r))

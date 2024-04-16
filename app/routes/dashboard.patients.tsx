@@ -9,9 +9,9 @@ import {useEffect, useState} from "react";
 import {createServerClient} from "@supabase/auth-helpers-remix";
 import {checkForRoles} from "~/util/checkForRole";
 import PatientCard from "~/components/dashboard/patients/PatientCard";
-import {PatientProfile} from "~/types/database.types";
 import CompoundPatient from "~/fhir-supa/compoundPatient";
 import generateCompoundPatients from "~/util/generateCompoundPatients";
+import {PatientProfile} from "~/types/DBTypes";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const response = new Response();
@@ -19,7 +19,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
     request,
     response
   });
-  const hasRole = await checkForRoles(["admin"], supabaseClient);
+  const hasRole = await checkForRoles(["admin", "editor"], supabaseClient);
   if (!hasRole) {
     console.log("Unauthorized")
     return json({error: "Unauthorized"}, {
@@ -53,7 +53,7 @@ function DashboardPatients() {
   const revalidator = useRevalidator();
   useEffect(() => {
     console.log(data)
-    if (Object.hasOwn(data, "error")) {
+    if ("error" in data && data.error !== "Unauthorized") {
       revalidator.revalidate();
       return
     }
